@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# Test and coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Packaging
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Streamlit secrets
+phase6/streamlit_app/.streamlit/secrets.toml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~
