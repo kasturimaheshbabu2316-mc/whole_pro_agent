@@ -44,7 +44,7 @@ The app uses the following default endpoints:
 - Job Finder: `http://localhost:8003`
 - Email Agent: `http://localhost:8005`
 
-To override defaults, create `.streamlit/secrets.toml` with:
+To override defaults, copy `.streamlit/secrets.example.toml` to `.streamlit/secrets.toml` and update the values.
 
 ```toml
 AUTH_URL = "http://localhost:8001"
