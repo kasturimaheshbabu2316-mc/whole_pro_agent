@@ -1,0 +1,8 @@
+site_name: Whole Agent Production Docs
+nav:
+  - Home: index.md
+  - Deployment Guide: deployment-guide.md
+  - Observability: observability.md
+
+docs_dir: .
+site_dir: site

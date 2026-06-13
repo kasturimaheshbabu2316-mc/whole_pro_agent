@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  job_finder:
+    build:
+      context: ./job_finder
+    container_name: job_finder
+    ports:
+      - "8002:8000"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+      - elasticsearch
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/whole_agent
+      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - ELASTICSEARCH_URL=http://elasticsearch:9200

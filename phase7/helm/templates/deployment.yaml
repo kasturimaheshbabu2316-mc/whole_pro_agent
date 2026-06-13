@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.name | default .Chart.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: DATABASE_URL
+              value: "{{ .Values.env.databaseUrl }}"
+            - name: REDIS_URL
+              value: "{{ .Values.env.redisUrl }}"
+            - name: CELERY_BROKER_URL
+              value: "{{ .Values.env.rabbitmqUrl }}"
+            - name: ELASTICSEARCH_URL
+              value: "{{ .Values.env.elasticsearchUrl }}"

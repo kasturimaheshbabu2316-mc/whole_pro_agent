@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: whole-agent/{{ .Chart.Name }}
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources: {}
+
+# To deploy the Streamlit UI with this chart, override the port and image values:
+# service:
+#   port: 8501
+# image:
+#   repository: whole-agent/streamlit-ui
+#   tag: latest
+
+env:
+  databaseUrl: "postgresql://admin:password@postgres/whole_agent"
+  redisUrl: "redis://redis:6379/0"
+  rabbitmqUrl: "amqp://guest:guest@rabbitmq:5672//"
+  elasticsearchUrl: "http://elasticsearch:9200"

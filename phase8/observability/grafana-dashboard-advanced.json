@@ -1,0 +1,48 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "#000000",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "title": "Whole Agent Advanced Overview",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "95th Percentile Request Latency",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace='whole-agent'}[5m])) by (le, service))",
+          "legendFormat": "{{service}}"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "RabbitMQ Ready Messages",
+      "targets": [
+        {
+          "expr": "rabbitmq_queue_messages_ready"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Elasticsearch Availability",
+      "targets": [
+        {
+          "expr": "up{job='elasticsearch'}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 27,
+  "version": 1
+}

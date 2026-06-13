@@ -1,0 +1,209 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: whole-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: whole-agent/auth-service:latest
+          env:
+            - name: DATABASE_URL
+              value: postgresql://admin:password@postgres/whole_agent
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: whole-agent
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  selector:
+    app: auth-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-builder
+  namespace: whole-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-builder
+  template:
+    metadata:
+      labels:
+        app: resume-builder
+    spec:
+      containers:
+        - name: resume-builder
+          image: whole-agent/resume-builder:latest
+          env:
+            - name: DATABASE_URL
+              value: postgresql://admin:password@postgres/whole_agent
+            - name: REDIS_URL
+              value: redis://redis:6379/0
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-builder
+  namespace: whole-agent
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  selector:
+    app: resume-builder
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-finder
+  namespace: whole-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-finder
+  template:
+    metadata:
+      labels:
+        app: job-finder
+    spec:
+      containers:
+        - name: job-finder
+          image: whole-agent/job-finder:latest
+          env:
+            - name: DATABASE_URL
+              value: postgresql://admin:password@postgres/whole_agent
+            - name: REDIS_URL
+              value: redis://redis:6379/0
+            - name: ELASTICSEARCH_URL
+              value: http://elasticsearch:9200
+            - name: CELERY_BROKER_URL
+              value: amqp://guest:guest@rabbitmq:5672//
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-finder
+  namespace: whole-agent
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  selector:
+    app: job-finder
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-agent
+  namespace: whole-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-agent
+  template:
+    metadata:
+      labels:
+        app: email-agent
+    spec:
+      containers:
+        - name: email-agent
+          image: whole-agent/email-agent:latest
+          env:
+            - name: DATABASE_URL
+              value: postgresql://admin:password@postgres/whole_agent
+            - name: CELERY_BROKER_URL
+              value: amqp://guest:guest@rabbitmq:5672//
+            - name: CELERY_RESULT_BACKEND
+              value: redis://redis:6379/0
+            - name: SMTP_HOST
+              value: ""
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-agent
+  namespace: whole-agent
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  selector:
+    app: email-agent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlit-ui
+  namespace: whole-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streamlit-ui
+  template:
+    metadata:
+      labels:
+        app: streamlit-ui
+    spec:
+      containers:
+        - name: streamlit-ui
+          image: whole-agent/streamlit-ui:latest
+          env:
+            - name: AUTH_URL
+              value: http://auth-service:8000
+            - name: RESUME_URL
+              value: http://resume-builder:8000
+            - name: JOB_URL
+              value: http://job-finder:8000
+            - name: EMAIL_URL
+              value: http://email-agent:8000
+          ports:
+            - containerPort: 8501
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: streamlit-ui
+  namespace: whole-agent
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8501
+      targetPort: 8501
+      name: http
+  selector:
+    app: streamlit-ui

@@ -1,0 +1,33 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: whole-agent-advanced-alerts
+  namespace: whole-agent
+spec:
+  groups:
+    - name: whole-agent-advanced.rules
+      rules:
+        - alert: HighRequestLatency
+          expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace="whole-agent"}[5m])) by (le, service)) > 0.5
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High request latency detected"
+            description: "95th percentile latency for {{ $labels.service }} is above 500ms."
+        - alert: HighRabbitMQQueueDepth
+          expr: rabbitmq_queue_messages_ready > 200
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "RabbitMQ queue depth is high"
+            description: "Over 200 messages are ready in RabbitMQ."
+        - alert: ElasticsearchUnhealthy
+          expr: up{job="elasticsearch"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Elasticsearch is down"
+            description: "Elasticsearch job is unavailable."

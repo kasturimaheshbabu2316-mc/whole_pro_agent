@@ -1,0 +1,21 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: whole-agent-pdb
+  namespace: whole-agent
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: auth-service
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: job-finder-pdb
+  namespace: whole-agent
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: job-finder
